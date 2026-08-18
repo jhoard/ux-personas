@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ux-personas — virtual users for design testing</title>
+<meta name="description" content="A Claude Code skill that turns user research and personas into virtual users for testing design prototypes.">
+<style>
+  :root {
+    --bg: #faf9f7; --surface: #ffffff; --ink: #1f2328; --muted: #59636e;
+    --accent: #0b57d0; --accent-ink: #ffffff; --border: #e3e1dc;
+    --code-bg: #f2f0ec; --warn-bg: #fff8e6; --warn-border: #e6c96b;
+    --good: #1a7f37;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #12141a; --surface: #1a1d24; --ink: #e6e6e3; --muted: #9aa2ad;
+      --accent: #7aa7ff; --accent-ink: #0d1117; --border: #2c313a;
+      --code-bg: #232730; --warn-bg: #2b2617; --warn-border: #8a7a3a;
+      --good: #4ac26b;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  header.hero { padding: 64px 24px 48px; text-align: center; border-bottom: 1px solid var(--border); }
+  .hero h1 { font-size: 2.4rem; margin: 0 0 8px; letter-spacing: -0.02em; }
+  .hero p.tag { font-size: 1.15rem; color: var(--muted); max-width: 620px; margin: 0 auto 24px; }
+  .hero .cta a { display: inline-block; background: var(--accent); color: var(--accent-ink);
+    padding: 10px 22px; border-radius: 8px; font-weight: 600; margin: 4px 6px; }
+  .hero .cta a.ghost { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+  nav.toc { position: sticky; top: 0; background: var(--bg); border-bottom: 1px solid var(--border);
+    padding: 10px 24px; text-align: center; z-index: 5; font-size: 0.92rem; }
+  nav.toc a { margin: 0 10px; color: var(--muted); }
+  nav.toc a:hover { color: var(--accent); }
+  main { max-width: 780px; margin: 0 auto; padding: 24px 24px 80px; }
+  section { margin-top: 56px; }
+  h2 { font-size: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 8px; letter-spacing: -0.01em; }
+  h3 { font-size: 1.12rem; margin-top: 28px; }
+  code, pre { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; font-size: 0.88em; }
+  code { background: var(--code-bg); padding: 2px 5px; border-radius: 4px; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px 16px; overflow-x: auto; line-height: 1.5; }
+  pre code { background: none; padding: 0; }
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 0.93rem; display: block; overflow-x: auto; }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--code-bg); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin: 16px 0; }
+  .warn { background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 10px; padding: 16px 20px; }
+  .muted { color: var(--muted); }
+  .flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+  .flow .card { margin: 0; }
+  .flow h4 { margin: 0 0 6px; font-size: 1rem; }
+  .step-num { display: inline-block; background: var(--accent); color: var(--accent-ink);
+    width: 24px; height: 24px; border-radius: 50%; text-align: center; line-height: 24px;
+    font-weight: 700; font-size: 0.85rem; margin-right: 8px; }
+  footer { border-top: 1px solid var(--border); padding: 32px 24px; text-align: center; color: var(--muted); font-size: 0.9rem; }
+  blockquote { border-left: 3px solid var(--accent); margin: 16px 0; padding: 4px 18px; color: var(--muted); font-style: italic; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <h1>ux-personas</h1>
+  <p class="tag">A Claude Code skill that turns your user research into <strong>virtual users</strong> — persona-driven agents that click through your prototypes, struggle where real users would, and report what they found.</p>
+  <div class="cta">
+    <a href="https://github.com/jhoard/ux-personas">View on GitHub</a>
+    <a class="ghost" href="#install">Install</a>
+  </div>
+</header>
+
+<nav class="toc">
+  <a href="#how">How it works</a>
+  <a href="#install">Install</a>
+  <a href="#quickstart">Quick start</a>
+  <a href="#personas">Creating personas</a>
+  <a href="#schema">Schema</a>
+  <a href="#testing">Running tests</a>
+  <a href="#clients">Client engagements</a>
+  <a href="#limits">Limitations</a>
+</nav>
+
+<main>
+
+<section id="how">
+  <h2>How it works</h2>
+  <p>Every serious simulated-user system converges on the same four layers. This skill implements them natively in Claude Code — no separate app, no separate API billing:</p>
+  <div class="flow">
+    <div class="card"><h4>1 · Persona ingestion</h4>Real research (or a described audience) becomes a structured persona file with behavioral fields that actually drive simulation.</div>
+    <div class="card"><h4>2 · Agent embodiment</h4>Each persona becomes an <em>isolated</em> agent that knows nothing about your design's intent — only who it is and what it's trying to do.</div>
+    <div class="card"><h4>3 · Browser driving</h4>The agent experiences your prototype through a real browser — clicking, scrolling, reading (or skimming) — in character, thinking aloud.</div>
+    <div class="card"><h4>4 · Synthesis</h4>Traces from all personas merge into an evidence-weighted findings report with verbatim quotes and a non-removable limitations footer.</div>
+  </div>
+  <p>The isolation is the point: a persona agent is spawned with <em>only</em> its persona file and standing instructions. It cannot see your conversation, your rationale, or what you hoped it would find — which is what keeps the testing honest.</p>
+  <p class="muted">Inspired by <a href="https://github.com/neuhai/UXAgent">UXAgent</a> (Amazon Science / CHI 2025), rebuilt as a portable, skill-native workflow.</p>
+</section>
+
+<section id="install">
+  <h2>Install</h2>
+  <p>Requires <a href="https://claude.com/claude-code">Claude Code</a>.</p>
+  <pre><code>git clone https://github.com/jhoard/ux-personas.git
+ln -sfn "$(pwd)/ux-personas" ~/.claude/skills/ux-personas
+mkdir -p ~/.claude/personas</code></pre>
+  <p>That's it. The skill auto-registers on your next Claude Code session (or immediately in a running one). Verify with <code>/ux-personas</code>.</p>
+  <div class="card">
+    <strong>Why a symlink?</strong> The repo stays git-managed wherever you keep code, while Claude Code sees it at the path it expects. <code>git pull</code> in the clone updates the live skill.
+  </div>
+</section>
+
+<section id="quickstart">
+  <h2>Quick start</h2>
+  <p><span class="step-num">1</span><strong>Create a persona.</strong> In Claude Code, from any project:</p>
+  <pre><code>/ux-personas create a persona from my interview notes in research/interviews.md</code></pre>
+  <p><span class="step-num">2</span><strong>Serve a prototype.</strong> Any local HTML works:</p>
+  <pre><code>python3 -m http.server 8080 --directory ./prototypes</code></pre>
+  <p><span class="step-num">3</span><strong>Run a test:</strong></p>
+  <pre><code>/ux-personas test http://localhost:8080/checkout.html with maria and raj — task "Find and change the shipping address"</code></pre>
+  <p><span class="step-num">4</span><strong>Read the report</strong> at <code>ux-tests/&lt;date&gt;-&lt;task&gt;.md</code> — outcomes per persona, ranked findings with verbatim think-aloud quotes, divergences between personas, and expert-lens observations.</p>
+  <p>You don't need the slash command — natural phrasing works: <em>"test this flow with my personas"</em>, <em>"import the personas from this old deck"</em>.</p>
+</section>
+
+<section id="personas">
+  <h2>Creating personas</h2>
+  <p>One entry point, three routes, chosen by what you actually have. Every persona is stamped with <strong>provenance</strong> so speculation never masquerades as research:</p>
+  <table>
+    <tr><th>You have</th><th>Provenance</th><th>What happens</th></tr>
+    <tr><td>Interview notes, transcripts, surveys, support tickets</td><td><code>research</code></td><td>The skill extracts behavioral evidence, proposes distinct persona clusters, and builds the ones you pick. Every simulation field cites evidence or is marked <code>(inferred)</code>. Verbatim participant quotes are preserved.</td></tr>
+    <tr><td>Existing persona docs (any format)</td><td><code>imported</code></td><td>Restructured into the schema. Classic marketing personas usually lack the behavioral fields — the skill asks you to fill each gap. Defaults to <code>confidence: medium</code>.</td></tr>
+    <tr><td>Just a description ("solo contractors, 40s, low tech fluency")</td><td><code>generated</code></td><td>Drafts personas, asks sharpening questions for uncertain fields. Locked to <code>confidence: low</code> — never silently upgraded.</td></tr>
+  </table>
+  <p>Personas save to a <strong>global library</strong> (<code>~/.claude/personas/</code>, reusable everywhere) or a <strong>project folder</strong> (<code>./personas/</code>, self-contained and handable to a client). A project persona with the same name shadows the global one.</p>
+</section>
+
+<section id="schema">
+  <h2>The persona schema</h2>
+  <p>One persona = one Markdown file. The frontmatter fields exist because they <em>change agent behavior in a test</em> — not for documentation decoration:</p>
+  <pre><code>---
+name: maria-the-overbooked-owner
+display_name: Maria Delgado (invented)   # marked when sources are anonymized
+archetype: Delegated admin
+provenance: research        # research | imported | generated
+confidence: high            # high | medium | low
+sources:
+  - interviews/2026-07-admin-study.md
+created: 2026-08-18
+client: MedCorp             # optional engagement tag
+# --- simulation-critical fields ---
+tech_fluency: low           # low | medium | high
+patience: low - gives up after ~2 failed attempts
+reading_style: skims        # skims | scans-headers | reads-thoroughly
+domain_knowledge: expert in her trade, novice in software vocabulary
+accessibility: reading glasses; small tap targets are a real problem
+---
+
+## Goals
+## Frustrations        (verbatim quotes when research exists)
+## Behavioral notes    ("abandons rather than create an account")
+## Context</code></pre>
+  <h3>How fields drive behavior</h3>
+  <table>
+    <tr><th>Field</th><th>In a test run…</th></tr>
+    <tr><td><code>tech_fluency: low</code></td><td>Only labeled, conventional controls register as clickable. Unlabeled icons ("⋯", gear glyphs, hover-revealed menus) are invisible in practice. Jargon confuses, spoken aloud.</td></tr>
+    <tr><td><code>tech_fluency: high</code></td><td>Expects RBAC, audit logs, bulk actions in conventional places; uses search first; reads errors fully. Also skips wizards, resents hand-holding, and flags what's <em>missing</em> — absent confirmations, missing audit trails.</td></tr>
+    <tr><td><code>patience</code></td><td>Treated literally. Exploratory clicks count as failed attempts. Giving up is a valid outcome — and a finding.</td></tr>
+    <tr><td><code>reading_style: skims</code></td><td>Body copy and helper text effectively don't exist. Buried CTAs go unfound.</td></tr>
+    <tr><td><code>reference_tools</code> (extension)</td><td>Expectations transfer: "in Okta this is on the user detail page — I checked there twice."</td></tr>
+  </table>
+</section>
+
+<section id="testing">
+  <h2>Running tests</h2>
+  <pre><code>/ux-personas test &lt;url&gt; with &lt;personas&gt; — task "&lt;the flow to attempt&gt;"</code></pre>
+  <ul>
+    <li><strong>Preflight:</strong> personas validated, URL checked (the skill offers to serve a local folder if you gave a file path). Failures stop the run — the skill never "tests" from imagination.</li>
+    <li><strong>One isolated agent per persona</strong>, run in parallel, each capped at 25 browser actions.</li>
+    <li><strong>Outcomes:</strong> <code>completed</code> · <code>gave-up</code> (a finding!) · <code>blocked</code> · <code>incomplete (technical)</code> (not a finding — a harness problem, disclosed separately).</li>
+  </ul>
+  <h3>Anatomy of a report</h3>
+  <table>
+    <tr><th>Section</th><th>What it tells you</th></tr>
+    <tr><td>Run summary</td><td>Per-persona outcome, steps, stall point — with provenance/confidence labels so "blocked (research/high)" reads differently from "blocked (generated/low)".</td></tr>
+    <tr><td>Findings</td><td>Friction clustered across personas, ranked by (personas affected × confidence), each citing verbatim think-aloud.</td></tr>
+    <tr><td>Divergences</td><td>Where personas behaved differently and why that's informative ("Raj completed via search; Maria never discovered search exists").</td></tr>
+    <tr><td>Expert-lens findings</td><td>Governance and trust gaps — missing confirmations, audit trails, bulk actions — kept separate because they route to different fixes.</td></tr>
+    <tr><td>Limitations footer</td><td>Fixed, non-removable. See below.</td></tr>
+  </table>
+  <p>See a real one: <a href="https://github.com/jhoard/ux-personas/blob/main/examples/sample-findings-report.md">examples/sample-findings-report.md</a> — from the skill's own acceptance run, where a low-fluency persona correctly gave up on a hover-only menu and a high-fluency admin flagged the missing audit trail.</p>
+</section>
+
+<section id="clients">
+  <h2>Client engagements</h2>
+  <p>The schema is deliberately two-layer: a universal core (how any human behaves at an interface) plus a free-form <code>attributes:</code> extension per engagement. Declare what a client's personas must capture in <code>personas/_schema.md</code> and every creation flow will prompt for it.</p>
+  <p>The repo ships a starter for <strong>enterprise governance/admin</strong> work — copy <a href="https://github.com/jhoard/ux-personas/blob/main/starters/enterprise-governance.md"><code>starters/enterprise-governance.md</code></a> to your project's <code>personas/_schema.md</code> to capture:</p>
+  <pre><code>role_scope          # what they administer
+permissions_level   # global admin | delegated admin | auditor | end user
+compliance_context  # SOC2, HIPAA, FedRAMP...
+risk_posture        # "blocks first" vs "enables, monitors"
+approval_chain      # can they act unilaterally?
+reference_tools     # Okta, ServiceNow... expectations transfer from these</code></pre>
+  <p>A persona who <em>can't act unilaterally</em> tests flows differently — they hunt for export and share-for-approval paths, and their absence becomes a finding no consumer-style persona would surface.</p>
+</section>
+
+<section id="limits">
+  <h2>Honest limitations</h2>
+  <div class="warn">
+    <p><strong>Simulated users are not research participants.</strong> They cannot experience real emotion, produce genuinely novel behavior, or represent statistical prevalence. They are documented to be unreliable for concept validation (they tend to praise concepts). Every report this skill produces carries this warning, non-removably — including reports that end up in client deliverables.</p>
+  </div>
+  <p>Where they're genuinely strong: <strong>early flow and findability testing</strong> ("can this persona complete the task?" is behavioral, not attitudinal), cheap iteration between design revisions, and piloting studies before you spend real-participant time. Validate any expensive decision with real users.</p>
+  <h3>Portability</h3>
+  <p>Everything except <code>SKILL.md</code> is harness-agnostic prose — persona files, agent instructions, report templates. Porting to another agent harness means rewriting one orchestration page. Your persona library is plain Markdown that any tool (or human) can read.</p>
+</section>
+
+</main>
+
+<footer>
+  <p>Built by <a href="https://github.com/jhoard">James Hoard</a> · Inspired by <a href="https://arxiv.org/abs/2502.12561">UXAgent (CHI 2025)</a> · <a href="https://github.com/jhoard/ux-personas/blob/main/LICENSE">MIT License</a></p>
+</footer>
+
+</body>
+</html>
