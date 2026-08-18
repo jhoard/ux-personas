@@ -31,20 +31,30 @@ Route by input type:
    Propose N distinct persona clusters with one-line summaries; the user picks
    which to develop. For every simulation-critical field, either cite evidence
    from the sources or mark the value `(inferred)`. Pull verbatim quotes into
-   Goals/Frustrations. List the files in `sources:`.
+   Goals/Frustrations. List the files in `sources:`. If sources are anonymized
+   (P1/P2...), invent a natural display_name but mark it `display_name: <Name> (invented)`
+   so no one mistakes it for a real participant.
 2. **Existing persona docs given** → `provenance: imported`. Restructure into
    the schema. Explicitly list which simulation-critical fields the original
    lacked and ask the user to supply each ("From your knowledge of this user
    type: skim or read thoroughly?"). Original doc path goes in `sources:`.
+   If the input was pasted text rather than a file, record it as
+   `pasted: <short description> (<date>)` in sources:. Default imported personas
+   to `confidence: medium` — grounded in someone's real documentation but not
+   verifiable from sources you can read. The user may raise or lower it.
 3. **Audience description only** → `provenance: generated`, `confidence: low`
-   (locked — see schema validation rules). Draft the persona(s), then ask up
-   to 4 sharpening questions (one at a time) targeting the simulation-critical
-   fields. Never present generated personas as research-grounded.
+   (locked — see schema validation rules). Draft the persona(s), then ask
+   sharpening questions (one at a time) for any simulation-critical field you
+   could not plausibly draft from the description — draft first, ask only where
+   genuinely uncertain, and stop when all five fields hold defensible values.
+   Never present generated personas as research-grounded.
 
-All routes end the same way: show the complete draft file → user approves or
-edits → ask "global library (`~/.claude/personas/`) or this project
-(`./personas/`)?" → write the file → confirm the saved path. If `_schema.md`
-exists in the project, prompt for its attributes in every route.
+All routes end the same way: for EACH persona, show the complete draft file and
+get approval or edits before moving to the next. Then ask ONCE for the batch:
+"global library (`~/.claude/personas/`) or this project (`./personas/`)?" —
+allowing per-persona overrides if the user wants a split. Write the files and
+confirm each saved path. If `_schema.md` exists in the project, prompt for its
+attributes in every route.
 
 ## list
 
