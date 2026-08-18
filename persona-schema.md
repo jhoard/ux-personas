@@ -37,6 +37,14 @@ accessibility: reading glasses; small tap targets are a real problem  # or "none
 4. Any field value not supported by evidence in `sources` is suffixed with
    `(inferred)` — e.g. `patience: medium (inferred)`. Inference is allowed;
    silent inference is not.
+5. Imported personas default to `confidence: medium` — grounded in someone's
+   real documentation but not verifiable from sources you can read; the user
+   may raise or lower it.
+6. When the import source is pasted text rather than a file, record it in
+   `sources:` as `pasted: <short description> (<date>)`.
+7. When research sources are anonymized (P1/P2...), an invented `display_name`
+   is allowed but must be marked `display_name: <Name> (invented)` so no one
+   mistakes it for a real participant.
 
 ## Layer 2 — Domain extension (optional, per client/engagement)
 

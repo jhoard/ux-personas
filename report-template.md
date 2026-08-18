@@ -75,3 +75,5 @@ real participants.
    not prevalence.
 4. `gave-up` outcomes are findings; `incomplete (technical)` outcomes are not
    and never appear in the Findings section.
+5. Carry `(invented)` display-name markers from persona files into the report's
+   run summary table, so invented names are never mistaken for real participants.
