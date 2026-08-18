@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Acme Admin — Users</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 0; background: #f6f7f9; color: #1a1d21; }
+  header { background: #1a2b4a; color: #fff; padding: 14px 24px; font-weight: 600; }
+  main { max-width: 720px; margin: 32px auto; background: #fff; border: 1px solid #e2e5ea; border-radius: 8px; padding: 24px; }
+  h1 { font-size: 18px; margin: 0 0 16px; }
+  .add-btn { background: #2563eb; color: #fff; border: 0; border-radius: 6px; padding: 10px 16px; font-size: 14px; cursor: pointer; }
+  table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid #eef0f3; font-size: 14px; }
+  tr { position: relative; }
+  .row-menu { visibility: hidden; border: 0; background: none; cursor: pointer; font-size: 16px; }
+  tr:hover .row-menu { visibility: visible; }
+  .menu-pop { display: none; position: absolute; right: 8px; background: #fff; border: 1px solid #d6dae1; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,.08); z-index: 2; }
+  .menu-pop.open { display: block; }
+  .menu-pop button { display: block; width: 100%; text-align: left; padding: 8px 14px; border: 0; background: none; font-size: 13px; cursor: pointer; }
+  .menu-pop button:hover { background: #f2f4f7; }
+  .status-off { color: #9aa1ab; }
+  #toast { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: #1a1d21; color: #fff; padding: 8px 16px; border-radius: 6px; font-size: 13px; display: none; }
+</style>
+</head>
+<body>
+<header>Acme Admin Console</header>
+<main>
+  <h1>Users</h1>
+  <button class="add-btn" onclick="addUser()">Add user</button>
+  <table id="users">
+    <thead><tr><th>Name</th><th>Role</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      <tr><td>Dana Wells</td><td>Member</td><td class="st">Active</td>
+        <td><button class="row-menu" onclick="toggleMenu(this)">⋯</button>
+          <div class="menu-pop"><button onclick="deactivate(this)">Deactivate user</button></div></td></tr>
+      <tr><td>Sam Ortiz</td><td>Member</td><td class="st">Active</td>
+        <td><button class="row-menu" onclick="toggleMenu(this)">⋯</button>
+          <div class="menu-pop"><button onclick="deactivate(this)">Deactivate user</button></div></td></tr>
+    </tbody>
+  </table>
+</main>
+<div id="toast"></div>
+<script>
+  function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'; setTimeout(()=>t.style.display='none',2500); }
+  function addUser(){ toast('User invitation sent'); }
+  function toggleMenu(btn){ document.querySelectorAll('.menu-pop').forEach(p=>p.classList.remove('open')); btn.nextElementSibling.classList.add('open'); }
+  function deactivate(btn){ const row=btn.closest('tr'); row.querySelector('.st').textContent='Inactive'; row.querySelector('.st').className='st status-off'; btn.closest('.menu-pop').classList.remove('open'); }
+  document.addEventListener('click', e=>{ if(!e.target.closest('.menu-pop') && !e.target.classList.contains('row-menu')) document.querySelectorAll('.menu-pop').forEach(p=>p.classList.remove('open')); });
+</script>
+</body>
+</html>
