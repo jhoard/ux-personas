@@ -8,10 +8,11 @@ description: Create research-grounded UX personas and run virtual-user tests aga
 Persona creation, library management, and virtual-user prototype testing.
 Companion files (same directory): `persona-schema.md` (format + validation),
 `persona-agent.md` (virtual-user instructions), `report-template.md`
-(synthesis), `starters/` (engagement schema templates).
+(synthesis), `fidelity-check.md` (two-arm behavior validation),
+`starters/` (engagement schema templates).
 
-Route by the user's intent: **create**, **list**, **refine**, or **test**.
-If ambiguous, ask which they want.
+Route by the user's intent: **create**, **list**, **refine**, **test**, or
+**verify**. If ambiguous, ask which they want.
 
 ## Storage resolution (all operations)
 
@@ -101,13 +102,60 @@ Run personas in parallel. If parallel browser sessions conflict (tab
 contention, shared state), fall back to sequential runs and note it in the
 report's Technical notes.
 
+Record the model you dispatched each persona subagent with. The report states
+it as fact, not from memory — a persona-agent model is part of the evaluation
+configuration, and results move with it.
+
 ### Synthesize
 
 Collect all traces. Write the report to
 `<cwd>/ux-tests/YYYY-MM-DD-<task-slug>.md` following `report-template.md`
 exactly (footer verbatim, evidence quotes verbatim, ranking by
-personas-affected × confidence weight). Show the user the report path and a
-3-line executive summary in chat.
+personas-affected × confidence weight), including the persona-agent and
+synthesis model fields. If those two models share a family, add the
+backbone-bias line the template specifies — you played the user and are now
+grading the performance. Show the user the report path and a 3-line executive
+summary in chat.
+
+## verify
+
+Proves persona simulation fields actually change behavior — and that they have
+not been tightened so far the persona can no longer succeed. Read
+`fidelity-check.md` first; it defines pole pairs, the judge rubric, and what
+each failure means.
+
+Invocation shape: verify [<trait> | all]. Traits with shipped pole pairs:
+`tech_fluency`, `reading_style`, `patience`. If asked for a trait without a
+pair (`domain_knowledge`, `accessibility`), say plainly that no arena can
+decide it yet rather than inventing one.
+
+For each pole pair:
+
+1. **Synthesize the two variants** into a scratch directory — NEVER the user's
+   persona library. Identical in every field except the trait under test, which
+   takes each pole. Both need all five simulation-critical fields to be valid
+   per `persona-schema.md`.
+2. **Serve the arena** from `fixtures/` and verify it responds, same preflight
+   discipline as `test`.
+3. **Run the arms one at a time**, each in a fresh browser tab, using the exact
+   `test` spawn prompt — the same `persona-agent.md` text, the same
+   persona-file-only isolation, the same step cap. The harness must exercise the
+   real path or it proves nothing about it. Do NOT parallelize arms: they share
+   browser state, and a contaminated arm (input typed by the other arm, page
+   swapped mid-task) is `incomplete (technical)`, never a pass. See
+   `fidelity-check.md`.
+4. **Judge each arm** with a subagent on a DIFFERENT model from the persona
+   agent. Give it the trace and the declared pole only — never the arena's
+   source, never which arm is expected to complete the task. Ask for
+   `expressed` / `correctly-suppressed` / `violated` plus the trace line that
+   decided it. Remember `gave-up` is the correct outcome for a constrained arm.
+
+Report a table: trait, pole, outcome, verdict, evidence quote. Pass requires
+BOTH arms correct. On failure, name the direction and the rule: constrained arm
+succeeded → that `persona-agent.md` rule is decoration, tighten it; capable arm
+failed → it is over-tight, loosen it. Never report a pass for an arm that did
+not actually run — a fixture that will not serve or a crashed arm is
+`incomplete (technical)`.
 
 ## Error handling (all operations)
 

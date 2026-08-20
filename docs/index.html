@@ -79,6 +79,7 @@
   <a href="#schema">Schema</a>
   <a href="#testing">Running tests</a>
   <a href="#clients">Client engagements</a>
+  <a href="#verify">Verify</a>
   <a href="#limits">Limitations</a>
 </nav>
 
@@ -202,6 +203,30 @@ reference_tools     # Okta, ServiceNow... expectations transfer from these</code
   <p>A persona who <em>can't act unilaterally</em> tests flows differently — they hunt for export and share-for-approval paths, and their absence becomes a finding no consumer-style persona would surface.</p>
 </section>
 
+<section id="verify">
+  <h2>Does the simulation actually work?</h2>
+  <p>A persona's fields are only worth having if they change what the agent does — and only
+  trustworthy if they haven't been tightened so far the persona can't succeed at anything.
+  <code>verify</code> proves both.</p>
+  <p>For a trait, it builds two personas identical except that trait, set to <strong>opposing
+  poles</strong>, runs each against an arena whose outcome the trait should decide, and has a judge
+  <strong>on a different model</strong> read each trace and return <code>expressed</code>,
+  <code>correctly-suppressed</code>, or <code>violated</code>. Passing requires both arms correct:</p>
+  <table>
+    <tr><th>Result</th><th>Meaning</th></tr>
+    <tr><td>Both arms correct</td><td>Binding and not over-tight — ship</td></tr>
+    <tr><td>Constrained arm succeeds anyway</td><td>The rule is decoration, not behavior — tighten it</td></tr>
+    <tr><td>Capable arm fails too</td><td>The rule is crippling the persona — loosen it</td></tr>
+  </table>
+  <p>That third row is what a single-arm check cannot see, and it is the failure mode that turns a
+  testing instrument into a machine that manufactures findings. Shipped pairs cover
+  <code>tech_fluency</code>, <code>reading_style</code>, and <code>patience</code>.
+  <code>domain_knowledge</code> and <code>accessibility</code> are documented as not yet
+  fixture-testable — a check that cannot fail is worse than no check.</p>
+  <p class="muted">Method adapted from <a href="https://arxiv.org/abs/2608.04205">MatrAIx</a>,
+  which validated persona-agent behavior across 400 controlled trials (91.5% adherence).</p>
+</section>
+
 <section id="limits">
   <h2>Honest limitations</h2>
   <div class="warn">
@@ -215,7 +240,7 @@ reference_tools     # Okta, ServiceNow... expectations transfer from these</code
 </main>
 
 <footer>
-  <p>Built by <a href="https://github.com/jhoard">James Hoard</a> · Inspired by <a href="https://arxiv.org/abs/2502.12561">UXAgent (CHI 2025)</a> · <a href="https://github.com/jhoard/ux-personas/blob/main/LICENSE">MIT License</a></p>
+  <p>Built by <a href="https://github.com/jhoard">James Hoard</a> · Inspired by <a href="https://arxiv.org/abs/2502.12561">UXAgent (CHI 2025)</a> · Fidelity method from <a href="https://arxiv.org/abs/2608.04205">MatrAIx</a> · <a href="https://github.com/jhoard/ux-personas/blob/main/LICENSE">MIT License</a></p>
 </footer>
 
 </body>

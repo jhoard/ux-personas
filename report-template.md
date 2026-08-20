@@ -14,6 +14,9 @@ omitting a section.
 **Prototype:** <url or path>
 **Task given to participants:** <verbatim>
 **Personas:** N (breakdown by provenance, e.g. "2 research/high, 1 generated/low")
+**Persona-agent model:** <model id that played the personas>
+**Synthesis model:** <model id that wrote this report>
+**Last fidelity check:** <YYYY-MM-DD, traits verified — or "not run">
 
 ## Run summary
 
@@ -50,6 +53,13 @@ Governance/trust observations from high-fluency personas: missing audit
 trails, absent confirmations, convention violations. Kept separate from
 usability friction because they route to different fixes.
 
+## Method provenance
+
+<One line naming the persona-agent model. If it shares a model family with the
+synthesis model, add: "The same model family played the personas and wrote this
+synthesis — findings are subject to backbone bias, where a model grades its own
+performance." Omit the second sentence only when the families genuinely differ.>
+
 ## Technical notes
 
 Any `incomplete (technical)` runs and why. These are harness problems, not
@@ -77,3 +87,9 @@ real participants.
    and never appear in the Findings section.
 5. Carry `(invented)` display-name markers from persona files into the report's
    run summary table, so invented names are never mistaken for real participants.
+6. Model provenance is recorded from what was actually dispatched, never from
+   memory or assumption. Persona behavior moves with the model, so a report
+   without it cannot be reproduced or compared against a later run.
+7. State the backbone-bias line whenever the persona-agent and synthesis models
+   share a family. It is a real limit on the finding, not boilerplate — the
+   model that played the user is grading its own performance.
